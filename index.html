@@ -85,8 +85,10 @@
 </header>
 
 <!-- ============================================================
-     REPRODUCTOR DE MÚSICA DE FONDO — con lista de canciones,
-     nombre de la pista actual y control de volumen.
+     REPRODUCTOR DE MÚSICA DE FONDO — barra compacta acoplada al
+     costado de la pantalla. Muestra título de la canción arriba y
+     artista debajo, sin recortar el texto (se permite que ocupe
+     varias líneas si hace falta).
      ARCHIVOS REQUERIDOS (ver audio/LEEME.txt):
        audio/musica-fondo.mp3   → Deftones - I Think About You All The Time
        audio/stinkfist.mp3      → Tool - Stinkfist
@@ -96,35 +98,39 @@
      ============================================================ -->
 <audio id="bgAudio" preload="none"></audio>
 
-<div class="player" id="player">
+<aside class="player" id="player">
   <button id="audioToggle" class="player-toggle" aria-label="Reproducir música de fondo" aria-pressed="false">
     <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
     <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
   </button>
 
   <div class="player-info">
-    <span class="player-eyebrow">Sonando ahora</span>
-    <span class="player-track" id="playerTrack">Cargando…</span>
+    <span class="player-title" id="playerTitle">Cargando…</span>
+    <span class="player-artist" id="playerArtist"></span>
   </div>
 
-  <button class="player-nav" id="prevTrack" aria-label="Canción anterior">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
-  </button>
-  <button class="player-nav" id="nextTrack" aria-label="Canción siguiente">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 6l8.5 6L6 18z"/></svg>
-  </button>
+  <span class="player-eq" aria-hidden="true"><i></i><i></i><i></i></span>
 
-  <button class="player-list-toggle" id="playlistToggle" aria-label="Elegir canción" aria-expanded="false">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
-  </button>
+  <div class="player-controls">
+    <button class="player-nav" id="prevTrack" aria-label="Canción anterior">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+    </button>
+    <button class="player-nav" id="nextTrack" aria-label="Canción siguiente">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 6l8.5 6L6 18z"/></svg>
+    </button>
+  </div>
 
   <div class="player-volume">
     <svg viewBox="0 0 24 24" fill="currentColor" class="vol-icon"><path d="M4 9v6h4l5 5V4L8 9H4z"/></svg>
     <input type="range" id="volumeSlider" min="0" max="100" value="50" aria-label="Volumen">
   </div>
 
+  <button class="player-list-toggle" id="playlistToggle" aria-label="Elegir canción" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+  </button>
+
   <div class="playlist" id="playlist"></div>
-</div>
+</aside>
 
 <main>
 
@@ -157,7 +163,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M11 8v6M8 11h6"/></svg>
             </div>
           </div>
-          <p class="figure-caption">Reconstrucción artística — reemplaza con tu imagen usando el nombre indicado arriba.</p>
+          <p class="figure-caption">Reconstrucción artística.</p>
         </div>
       </div>
     </div>
@@ -298,7 +304,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M11 8v6M8 11h6"/></svg>
             </div>
           </div>
-          <p class="figure-caption">Paisaje de ríos y llanuras — reemplaza con tu imagen usando el nombre indicado arriba.</p>
+          <p class="figure-caption">Paisaje de ríos y llanuras.</p>
         </div>
         <div>
           <h2>Ríos, no desiertos</h2>
@@ -318,59 +324,6 @@
     <div class="wrap">
       <div class="placard-label">Espécimen Nº05 — Historia</div>
       <h2 class="reveal">Un siglo de fósiles perdidos y hallazgos</h2>
-
-      <!-- ============================================================
-           MAPA ANIMADO — esquema de los sitios de hallazgo.
-           Es un diagrama decorativo con los colores de la página
-           (no es cartografía real): una línea de expedición que
-           conecta los tres sitios, sobre capas de sedimento animadas.
-           El texto vive en las tarjetas de abajo, no sobre el dibujo,
-           para que quede prolijo a cualquier tamaño de pantalla.
-           ============================================================ -->
-      <div class="map-frame reveal">
-        <svg class="site-map" viewBox="0 0 800 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Esquema de los sitios de hallazgo del género Spinosaurus">
-          <defs>
-            <linearGradient id="waveGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#2E96A6" stop-opacity="0.16"/>
-              <stop offset="100%" stop-color="#2E96A6" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-
-          <path class="wave wave-1" d="M0 150 Q100 130 200 150 T400 150 T600 150 T800 150 V220 H0 Z" fill="url(#waveGrad)"/>
-          <path class="wave wave-2" d="M0 172 Q100 158 200 172 T400 172 T600 172 T800 172 V220 H0 Z" fill="url(#waveGrad)"/>
-
-          <path class="route-line" d="M120 110 C 250 50, 320 160, 400 100 C 480 40, 580 150, 680 90"/>
-
-          <g class="map-marker">
-            <circle class="pulse" cx="120" cy="110" r="9"/>
-            <circle class="dot" cx="120" cy="110" r="6"/>
-          </g>
-          <g class="map-marker">
-            <circle class="pulse" cx="400" cy="100" r="9"/>
-            <circle class="dot" cx="400" cy="100" r="6"/>
-          </g>
-          <g class="map-marker">
-            <circle class="pulse pulse-gold" cx="680" cy="90" r="10"/>
-            <circle class="dot dot-gold" cx="680" cy="90" r="7"/>
-          </g>
-        </svg>
-
-        <div class="map-legend">
-          <div class="map-legend-item">
-            <span class="legend-dot"></span>
-            <div><b>Marruecos</b><span>S. maroccanus — discutida</span></div>
-          </div>
-          <div class="map-legend-item">
-            <span class="legend-dot"></span>
-            <div><b>Egipto</b><span>S. aegyptiacus — descrita en 1915</span></div>
-          </div>
-          <div class="map-legend-item">
-            <span class="legend-dot legend-dot-gold"></span>
-            <div><b>Níger</b><span>S. mirabilis — descrita en 2026</span></div>
-          </div>
-        </div>
-        <p class="map-caption">Sitios de hallazgo del género Spinosaurus en el norte de África. El punto dorado marca el sitio de S. mirabilis, descrito en 2026.</p>
-      </div>
 
       <div class="timeline reveal">
         <div class="tl-item">
@@ -565,7 +518,7 @@
   <div class="wrap footer-inner">
     <div class="footer-main">
       <div class="footer-brand">Spinosaurus</div>
-      <div class="footer-credit">Página creada por <b>Nahim</b> · Contenido educativo, 2026</div>
+      <div class="footer-credit">Página creada por <b>Nahim</b> · 2026</div>
     </div>
 
     <!-- ============================================================
@@ -575,9 +528,9 @@
     <div class="footer-thanks">
       <span class="thanks-label">Agradecimientos</span>
       <ul class="thanks-list">
-        <li>Nombre 1</li>
-        <li>Nombre 2</li>
-        <li>Nombre 3</li>
+        <li>Licia Gomez</li>
+        <li>Jhonatan Alfaro</li>
+        <li>Oliver Ayala</li>
       </ul>
     </div>
   </div>

@@ -114,21 +114,24 @@ window.addEventListener('keydown', (e) => {
 });
 
 // ============================================================
-// REPRODUCTOR DE MÚSICA — lista de canciones, título, volumen
+// REPRODUCTOR DE MÚSICA — barra compacta: título arriba, artista
+// debajo, sin recortar texto. Lista de canciones, control de
+// volumen y anterior/siguiente.
 // Archivos esperados (ver audio/LEEME.txt):
 //   audio/musica-fondo.mp3  → Deftones - I Think About You All The Time
 //   audio/stinkfist.mp3     → Tool - Stinkfist
 //   audio/rage.mp3          → Rage Against The Machine - No Shelter
 // ============================================================
 const playlistData = [
-  { title: 'Deftones — I Think About You All The Time', src: 'audio/musica-fondo.mp3' },
-  { title: 'Tool — Stinkfist', src: 'audio/stinkfist.mp3' },
-  { title: 'Rage Against The Machine — No Shelter', src: 'audio/rage.mp3' }
+  { title: 'I Think About You All The Time', artist: 'Deftones', src: 'audio/musica-fondo.mp3' },
+  { title: 'Stinkfist', artist: 'Tool', src: 'audio/stinkfist.mp3' },
+  { title: 'No Shelter', artist: 'Rage Against The Machine', src: 'audio/rage.mp3' }
 ];
 
 const bgAudio = document.getElementById('bgAudio');
 const audioToggle = document.getElementById('audioToggle');
-const playerTrack = document.getElementById('playerTrack');
+const playerTitle = document.getElementById('playerTitle');
+const playerArtist = document.getElementById('playerArtist');
 const prevTrackBtn = document.getElementById('prevTrack');
 const nextTrackBtn = document.getElementById('nextTrack');
 const playlistToggle = document.getElementById('playlistToggle');
@@ -144,7 +147,7 @@ function buildPlaylistUI(){
     const btn = document.createElement('button');
     btn.className = 'playlist-song';
     btn.type = 'button';
-    btn.textContent = track.title;
+    btn.innerHTML = `<span class="playlist-song-title">${track.title}</span><span class="playlist-song-artist">${track.artist}</span>`;
     btn.addEventListener('click', () => {
       loadTrack(i, true);
       playlistEl.classList.remove('open');
@@ -171,7 +174,8 @@ function setPlayingUI(isPlaying){
 function loadTrack(index, autoplay){
   currentTrack = ((index % playlistData.length) + playlistData.length) % playlistData.length;
   const track = playlistData[currentTrack];
-  playerTrack.textContent = track.title;
+  playerTitle.textContent = track.title;
+  playerArtist.textContent = track.artist;
   bgAudio.src = track.src;
   updatePlaylistUI();
   if (autoplay) {
@@ -208,7 +212,8 @@ audioToggle.addEventListener('click', (e) => {
   if (bgAudio.paused) {
     userPaused = false;
     bgAudio.play().then(() => setPlayingUI(true)).catch(() => {
-      playerTrack.textContent = 'Falta el archivo de audio';
+      playerTitle.textContent = 'Falta el archivo de audio';
+      playerArtist.textContent = '';
     });
   } else {
     bgAudio.pause();
@@ -232,7 +237,7 @@ playlistToggle.addEventListener('click', (e) => {
   playlistToggle.setAttribute('aria-expanded', String(isOpen));
 });
 document.addEventListener('click', (e) => {
-  if (!playlistEl.contains(e.target) && e.target !== playlistToggle) {
+  if (!playlistEl.contains(e.target) && e.target !== playlistToggle && !playlistToggle.contains(e.target)) {
     playlistEl.classList.remove('open');
     playlistToggle.setAttribute('aria-expanded', 'false');
   }
