@@ -1,0 +1,24 @@
+Poné acá tus imágenes con estos nombres exactos:
+
+Galería general:
+  spinosaurus-1.jpg
+  mirabilis-cresta.jpg
+  aegyptiacus.jpg
+  fosil-original.jpg
+  vela-dorsal.jpg
+  comparacion-especies.jpg
+
+Figuras dentro de las secciones:
+  spinosaurus-reconstruccion.jpg   → sección "Qué es"
+  habitat-ripario.jpg              → sección "Hábitat"
+
+Nuevo — una imagen por cada especie, en la sección "Taxonomía":
+  especie-aegyptiacus.jpg          → tarjeta de S. aegyptiacus
+  especie-mirabilis.jpg            → tarjeta de S. mirabilis
+  especie-maroccanus.jpg           → tarjeta de S. maroccanus
+
+Mientras no exista alguna imagen, se muestra un marcador de posición con el
+nombre de archivo esperado, así siempre sabés qué falta subir.
+
+Ahora también podés tocar/clickear cualquier imagen para verla más grande
+(no hace falta hacer nada extra para esto, ya funciona solo).

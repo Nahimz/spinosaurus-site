@@ -1,0 +1,11 @@
+Coloca aquí tu canción/música de fondo con este nombre:
+
+musica-fondo.mp3
+
+Formatos aceptados: .mp3 (principal) y opcionalmente .ogg como respaldo
+(musica-fondo.ogg) para navegadores antiguos.
+
+El botón circular flotante abajo a la derecha de la página
+activa y pausa la música. No suena automáticamente al entrar
+porque los navegadores bloquean el audio con sonido sin que el
+usuario haga clic primero.

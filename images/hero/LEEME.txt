@@ -1,0 +1,7 @@
+Imagen de portada (la que se ve al entrar a la página):
+
+spinosaurus-hero.jpg   -> imagen grande y horizontal (ideal 1920x1080 o más),
+                          de un Spinosaurus. Se ve con un degradado oscuro
+                          encima para que el texto se lea bien.
+
+Mientras no subas esta imagen, se muestra un marcador con la cresta animada.
