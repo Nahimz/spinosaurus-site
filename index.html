@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="no-js">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Spinosaurus — El gigante semiacuático del Cretácico</title>
 <meta name="description" content="Página educativa sobre el género Spinosaurus, incluyendo el descubrimiento en 2026 de Spinosaurus mirabilis.">
+
+
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="apple-touch-icon" href="images/favicon.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,6 +21,8 @@
 <!-- ============================================================
      TORMENTA DE FONDO — truenos y relámpagos, a tono con la
      imagen de portada. Aparecen de a ratos, de forma aleatoria.
+     Se oculta automáticamente cuando el tema T-Rex está activo
+     (ver LAVA DE FONDO más abajo).
      ============================================================ -->
 <div class="storm-fx" id="stormFx" aria-hidden="true">
   <div class="flash" id="stormFlash"></div>
@@ -24,6 +30,16 @@
     <path class="bolt-path" id="boltPath1"></path>
     <path class="bolt-path bolt-path-b" id="boltPath2"></path>
   </svg>
+</div>
+
+<!-- ============================================================
+     LAVA DE FONDO — brasas y resplandor, se activa solo con el
+     tema T-Rex (reemplaza a la tormenta). Las brasas se generan
+     por JS (ver script.js) y se animan solo con CSS (barato).
+     ============================================================ -->
+<div class="lava-fx" id="lavaFx" aria-hidden="true">
+  <div class="lava-glow"></div>
+  <div class="lava-embers" id="lavaEmbers"></div>
 </div>
 
 <!-- ============================================================
@@ -40,6 +56,7 @@
     <a href="#que-es">Qué es</a>
     <a href="#caracteristicas">Características</a>
     <a href="#especies">Especies</a>
+    <a href="#comparacion">Vs. T-Rex</a>
     <a href="#habitat">Hábitat</a>
     <a href="#descubrimiento">Descubrimiento</a>
     <a href="#curiosidades">Curiosidades</a>
@@ -71,10 +88,10 @@
   <div class="hero-overlay"></div>
 
   <div class="hero-inner">
-    <div class="eyebrow">Género Spinosaurus · Theropoda</div>
-    <h1 class="hero-title">Spino<em>saurus</em></h1>
-    <p class="hero-sub">El gigante semiacuático del Cretácico: un depredador de hocico alargado y gran vela dorsal que dominó los ríos del norte de África hace más de 95 millones de años.</p>
-    <div class="hero-meta">
+    <div class="eyebrow" data-anim="eyebrow">Género Spinosaurus · Theropoda</div>
+    <h1 class="hero-title" data-anim="hero-title">Spino<em>saurus</em></h1>
+    <p class="hero-sub" data-anim="hero-sub">El gigante semiacuático del Cretácico: un depredador de hocico alargado y gran vela dorsal que dominó los ríos del norte de África hace más de 95 millones de años.</p>
+    <div class="hero-meta" data-anim="hero-meta">
       <span class="tag">Cretácico tardío</span>
       <span class="tag">Norte de África</span>
       <span class="tag">2 especies válidas</span>
@@ -85,51 +102,53 @@
 </header>
 
 <!-- ============================================================
-     REPRODUCTOR DE MÚSICA DE FONDO — barra compacta acoplada al
-     costado de la pantalla. Muestra título de la canción arriba y
-     artista debajo, sin recortar el texto (se permite que ocupe
-     varias líneas si hace falta).
-     ARCHIVOS REQUERIDOS (ver audio/LEEME.txt):
-       audio/musica-fondo.mp3   → Deftones - I Think About You All The Time
-       audio/stinkfist.mp3      → Tool - Stinkfist
-       audio/rage.mp3           → Rage Against The Machine - No Shelter
-     Los navegadores bloquean el autoplay con sonido, así que se
-     activa con el primer clic/scroll/tecla del usuario.
+     REPRODUCTOR DE MÚSICA DE FONDO — minimalista: botón de play
+   
      ============================================================ -->
 <audio id="bgAudio" preload="none"></audio>
 
+<button class="player-reopen" id="playerReopen" aria-label="Mostrar reproductor de música">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+</button>
+
 <aside class="player" id="player">
-  <button id="audioToggle" class="player-toggle" aria-label="Reproducir música de fondo" aria-pressed="false">
-    <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-    <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+  <button class="player-hide" id="playerHide" aria-label="Ocultar reproductor">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg>
   </button>
 
-  <div class="player-info">
+  <div class="player-meta">
     <span class="player-title" id="playerTitle">Cargando…</span>
     <span class="player-artist" id="playerArtist"></span>
   </div>
 
-  <span class="player-eq" aria-hidden="true"><i></i><i></i><i></i></span>
-
-  <div class="player-controls">
+  <div class="player-row">
     <button class="player-nav" id="prevTrack" aria-label="Canción anterior">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
     </button>
+
+    <button id="audioToggle" class="player-toggle" aria-label="Reproducir música de fondo" aria-pressed="false">
+      <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+    </button>
+
     <button class="player-nav" id="nextTrack" aria-label="Canción siguiente">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 6l8.5 6L6 18z"/></svg>
     </button>
   </div>
 
-  <div class="player-volume">
-    <svg viewBox="0 0 24 24" fill="currentColor" class="vol-icon"><path d="M4 9v6h4l5 5V4L8 9H4z"/></svg>
-    <input type="range" id="volumeSlider" min="0" max="100" value="50" aria-label="Volumen">
+  <div class="player-progress-row">
+    <span class="player-time" id="playerCurrentTime">0:00</span>
+    <div class="player-progress" id="playerProgress" role="slider" tabindex="0"
+         aria-label="Progreso de la canción" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div class="player-progress-track">
+        <div class="player-progress-fill" id="playerProgressFill"></div>
+        <div class="player-progress-handle" id="playerProgressHandle"></div>
+      </div>
+    </div>
+    <span class="player-time" id="playerDuration">0:00</span>
   </div>
 
-  <button class="player-list-toggle" id="playlistToggle" aria-label="Elegir canción" aria-expanded="false">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
-  </button>
-
-  <div class="playlist" id="playlist"></div>
+  <div class="player-decor-line" aria-hidden="true"></div>
 </aside>
 
 <main>
@@ -146,9 +165,9 @@
           <p>Spinosaurus fue un dinosaurio terópodo carnívoro que habitó el norte de África durante el Cretácico tardío, hace aproximadamente entre 99 y 93 millones de años. Se le reconoce por su hocico largo y estrecho, parecido al de un cocodrilo, sus dientes cónicos ideales para atrapar presas resbaladizas, y la enorme vela de piel y hueso que recorría su espalda.</p>
           <p>A diferencia de la mayoría de los grandes terópodos, la evidencia acumulada durante más de un siglo sugiere que Spinosaurus estaba profundamente ligado a ambientes acuáticos: ríos, lagunas y deltas donde cazaba peces y otros animales cerca del agua.</p>
           <div class="stat-row">
-            <div class="stat"><b>&gt;15 m</b><span>Longitud estimada</span></div>
-            <div class="stat"><b>~95 Ma</b><span>Antigüedad aprox.</span></div>
-            <div class="stat"><b>2</b><span>Especies válidas</span></div>
+            <div class="stat"><b data-count-to="15" data-count-prefix="&gt;" data-count-suffix=" m">&gt;15 m</b><span>Longitud estimada</span></div>
+            <div class="stat"><b data-count-to="95" data-count-prefix="~" data-count-suffix=" Ma">~95 Ma</b><span>Antigüedad aprox.</span></div>
+            <div class="stat"><b data-count-to="2" data-count-suffix="">2</b><span>Especies válidas</span></div>
           </div>
         </div>
         <div class="figure-frame">
@@ -286,11 +305,102 @@
   <svg class="crest-divider" viewBox="0 0 90 34"><path d="M2 30 Q20 10 45 17 Q70 24 88 4"/></svg>
 
   <!-- ============================================================
+       COMPARACIÓN: SPINOSAURUS VS. T-REX
+       Al hacer clic en cada ficha se activa su set de datos y,
+       en el caso del T-Rex, todo el sitio cambia su tema de color
+       a la variante roja/lava (misma paleta, distinto matiz).
+       IMÁGENES REQUERIDAS:
+         images/gallery/vs-spinosaurus.jpg
+         images/gallery/vs-trex.jpg
+       ============================================================ -->
+  <section id="comparacion">
+    <div class="wrap">
+      <div class="placard-label">Espécimen Nº04 — Comparativa</div>
+      <h2 class="reveal">Spinosaurus <em>frente a</em> Tyrannosaurus</h2>
+      <p class="reveal"></p>
+
+      <div class="vs-toggle reveal" role="tablist" aria-label="Elegir dinosaurio para comparar">
+        <button class="vs-btn vs-btn-spino active" id="btnSpino" role="tab" aria-selected="true">
+          <span class="vs-btn-name">Spinosaurus</span>
+          <span class="vs-btn-tag">Semiacuático</span>
+        </button>
+        <div class="vs-divider">VS</div>
+        <button class="vs-btn vs-btn-trex" id="btnTrex" role="tab" aria-selected="false">
+          <span class="vs-btn-name">Tyrannosaurus</span>
+          <span class="vs-btn-tag">Terrestre</span>
+        </button>
+      </div>
+
+      <div class="vs-panel reveal" id="vsPanel">
+
+        <div class="vs-data vs-data-spino active" id="dataSpino">
+          <div class="vs-image gallery-item lightbox-item" data-src="images/gallery/vs-spinosaurus.jpg">
+            <img alt="Spinosaurus">
+            <div class="gallery-fallback">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <div class="fname">images/gallery/vs-spinosaurus.jpg</div>
+            </div>
+            <div class="zoom-hint">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M11 8v6M8 11h6"/></svg>
+            </div>
+          </div>
+          <div class="vs-body">
+            <div class="vs-stats">
+              <div class="vs-stat"><b>15–16 m</b><span>Longitud</span></div>
+              <div class="vs-stat"><b>~7–20 t</b><span>Masa estimada</span></div>
+              <div class="vs-stat"><b>~95 Ma</b><span>Época</span></div>
+              <div class="vs-stat"><b>Norte de África</b><span>Región</span></div>
+            </div>
+            <ul class="vs-list">
+              <li>Hocico largo y estrecho, similar al de un cocodrilo.</li>
+              <li>Dientes cónicos, sin filo de sierra, para presas resbaladizas.</li>
+              <li>Gran vela dorsal de piel sostenida por espinas neurales.</li>
+              <li>Huesos densos y cola remo, adaptado a la vida semiacuática.</li>
+              <li>Dieta principalmente piscívora, cazando cerca o dentro del agua.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="vs-data vs-data-trex" id="dataTrex">
+          <div class="vs-image gallery-item lightbox-item" data-src="images/gallery/vs-trex.jpg">
+            <img alt="Tyrannosaurus rex">
+            <div class="gallery-fallback">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <div class="fname">images/gallery/vs-trex.jpg</div>
+            </div>
+            <div class="zoom-hint">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M11 8v6M8 11h6"/></svg>
+            </div>
+          </div>
+          <div class="vs-body">
+            <div class="vs-stats">
+              <div class="vs-stat"><b>12–13 m</b><span>Longitud</span></div>
+              <div class="vs-stat"><b>~8–9 t</b><span>Masa estimada</span></div>
+              <div class="vs-stat"><b>~68–66 Ma</b><span>Época</span></div>
+              <div class="vs-stat"><b>Norteamérica</b><span>Región</span></div>
+            </div>
+            <ul class="vs-list">
+              <li>Cráneo masivo y profundo, con la mordida más fuerte conocida entre terópodos.</li>
+              <li>Dientes gruesos en forma de banano, capaces de triturar hueso.</li>
+              <li>Extremidades delanteras muy reducidas con solo dos dedos funcionales.</li>
+              <li>Patas traseras robustas, adaptadas a la caza y carroñeo en tierra firme.</li>
+              <li>Depredador tope de su ecosistema, al final del Cretácico.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <svg class="crest-divider" viewBox="0 0 90 34"><path d="M2 30 Q20 10 45 17 Q70 24 88 4"/></svg>
+
+  <!-- ============================================================
        HÁBITAT Y ALIMENTACIÓN
        ============================================================ -->
   <section id="habitat">
     <div class="wrap">
-      <div class="placard-label">Espécimen Nº04 — Paleoecología</div>
+      <div class="placard-label">Espécimen Nº05 — Paleoecología</div>
       <div class="habitat-layout reveal">
         <div class="figure-frame">
           <!-- IMAGEN: images/gallery/habitat-ripario.jpg -->
@@ -322,7 +432,7 @@
        ============================================================ -->
   <section id="descubrimiento">
     <div class="wrap">
-      <div class="placard-label">Espécimen Nº05 — Historia</div>
+      <div class="placard-label">Espécimen Nº06 — Historia</div>
       <h2 class="reveal">Un siglo de fósiles perdidos y hallazgos</h2>
 
       <div class="timeline reveal">
@@ -362,7 +472,7 @@
        ============================================================ -->
   <section id="curiosidades">
     <div class="wrap">
-      <div class="placard-label">Espécimen Nº06 — Datos destacados</div>
+      <div class="placard-label">Espécimen Nº07 — Datos destacados</div>
       <h2 class="reveal">Curiosidades</h2>
       <div class="fact-grid reveal">
         <div class="fact-card">
@@ -400,7 +510,7 @@
        ============================================================ -->
   <section id="galeria">
     <div class="wrap">
-      <div class="placard-label">Espécimen Nº07 — Registro visual</div>
+      <div class="placard-label">Espécimen Nº08 — Registro visual</div>
       <h2 class="reveal">Galería</h2>
       <p class="reveal"><code></code></p>
 
@@ -489,7 +599,7 @@
        ============================================================ -->
   <section id="fuentes">
     <div class="wrap">
-      <div class="placard-label">Espécimen Nº08 — Referencias</div>
+      <div class="placard-label">Espécimen Nº09 — Referencias</div>
       <h2 class="reveal">Fuentes</h2>
       <div class="sources-list reveal">
         <div class="source-item">
@@ -546,6 +656,20 @@
   <img class="lightbox-img" id="lightboxImg" alt="">
   <div class="lightbox-caption" id="lightboxCaption"></div>
 </div>
+
+<!-- ============================================================
+     LIBRERÍAS DE ANIMACIÓN (CDN)
+     GSAP + ScrollTrigger → animaciones de entrada y scroll
+     SplitType → animación de títulos por líneas/palabras
+     El scroll de la página es el nativo del navegador (sin
+     librería de scroll suave), para que el desplazamiento con el
+     ratón responda igual que en cualquier sitio normal.
+     Si algún CDN no carga, script.js detecta su ausencia y la
+     página sigue funcionando con las transiciones CSS de respaldo.
+     ============================================================ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/split-type@0.3.4/umd/index.min.js"></script>
 
 <script src="script.js"></script>
 </body>
